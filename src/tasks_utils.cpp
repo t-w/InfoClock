@@ -8,15 +8,16 @@
 #include <vector>
 
 #include "Arduino.h"
-#include "ArduinoOTA.h"
+//#include "ArduinoOTA.h"
 
 #include "utils.h"
 #include "tasks_utils.h"
 #include "config.h"
 #include "DataStore.h"
 
-#include "WebServerTask.h"
+//#include "WebServerTask.h"
 #include "WifiConnector.h"
+#include "LHCStatusReaderNew.h"
 
 //ESP8266 raw API
 extern "C" {
@@ -28,10 +29,10 @@ using namespace Tasks;
 bool slowTaskCanExecute = false;
 
 static std::vector<TaskDescriptor>& getTasks()
-				{
+{
 	static std::vector<TaskDescriptor> tasks;
 	return tasks;
-				}
+}
 
 static os_timer_t myTimer;
 
@@ -42,14 +43,16 @@ static void timerCallback(void*)
 }
 
 WifiConnector& getWifiConnector();
-WebServerTask& getWebServerTask();
-DisplayTask&   getDisplayTask();
+//WebServerTask& getWebServerTask();
+//DisplayTask&   getDisplayTask();
+LHCStatusReaderNew& getLHCStatusReaderNew();
 
 void setupTasks()
 {
 	addTask(&getWifiConnector());
-	addTask(&getWebServerTask());
-	addTask(&getDisplayTask());
+//	addTask(&getWebServerTask());
+//	addTask(&getDisplayTask());
+	addTask( &getLHCStatusReaderNew() );
 
 	os_timer_setfn(&myTimer, timerCallback, NULL);
 	os_timer_arm(&myTimer, MS_PER_CYCLE, true);
@@ -72,12 +75,14 @@ RegisterTask::RegisterTask(Tasks::Task* t, uint8_t flags)
 	addTask(t, flags);
 	task = t;
 }
-
+/*
 RegisterPage::RegisterPage(const String& url, const String& label, std::function<void(ESP8266WebServer&)> ph)
 {
 	getWebServerTask().registerPage(url, label, ph);
 }
+*/
 
+/*
 RegisterPackage::RegisterPackage(const char* name, Tasks::Task* t, uint8_t flags,
 						 std::initializer_list<PageDescriptor> pages,
 						 std::initializer_list<DisplayLineDescriptor> displayLines)
@@ -99,7 +104,7 @@ RegisterPackage::RegisterPackage(const char* name, Tasks::Task* t, uint8_t flags
 	//add after each...
 	getDisplayTask().addClock();
 }
-
+*/
 
 void scheduleTasks()
 {
@@ -151,9 +156,9 @@ static void wifiConnectorCallback(WifiConnector::States state)
 
 		case WifiConnector::States::AP:
 		{
-			getWebServerTask().reset();
+//			getWebServerTask().reset();
 
-			getDisplayTask().pushMessage(F("AP mode"), 10_s);
+//			getDisplayTask().pushMessage(F("AP mode"), 10_s);
 			String ip = WiFi.softAPIP().toString();
 			DataStore::value("ip") = ip;
 			logPrintfX(F("WC"), F("IP = %s"), ip.c_str());
@@ -162,16 +167,16 @@ static void wifiConnectorCallback(WifiConnector::States state)
 
 		case WifiConnector::States::CLIENT:
 		{
-			getWebServerTask().reset();
+			//getWebServerTask().reset();
 
-			getDisplayTask().pushMessage(readConfig(F("essid")), 0.4_s, true);
+			//getDisplayTask().pushMessage(readConfig(F("essid")), 0.4_s, true);
 			String ip = WiFi.localIP().toString();
-			getDisplayTask().pushMessage(ip, 0.1_s, true);
+			//getDisplayTask().pushMessage(ip, 0.1_s, true);
 
 			DataStore::value(F("ip")) = ip;
 			logPrintfX(F("WC"), F("IP = %s"), ip.c_str());
 
-			ArduinoOTA.begin();
+			//ArduinoOTA.begin();
 
 			for (const auto& td: getTasks())
 			{
@@ -192,6 +197,8 @@ WifiConnector& getWifiConnector()
 	return wifiConnector;
 }
 
+
+/*
 WebServerTask& getWebServerTask()
 {
 	static WebServerTask webServerTask;
@@ -202,4 +209,11 @@ DisplayTask& getDisplayTask()
 {
 	static DisplayTask displayTask;
 	return displayTask;
+}
+*/
+
+LHCStatusReaderNew& getLHCStatusReaderNew()
+{
+	static LHCStatusReaderNew statusReader;
+	return statusReader;
 }

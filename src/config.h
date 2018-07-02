@@ -27,8 +27,13 @@ const static uint8_t ONE_WIRE_TEMP = D3;
 
 const static char versionString[] = "v 0.4.0";
 
-const static int SERIAL_BAUD_RATE = 921600;
+//const static int SERIAL_BAUD_RATE = 921600;
+const static int SERIAL_BAUD_RATE = 115200;
+//const static int SERIAL_BAUD_RATE = 9600;
 
 const static char DEFAULT_PASSWORD[] = "password";
 const static char DEFAULT_USER[] = "user";
+
+const static char DEFAULT_ESSID[] = "";
+const static char DEFAULT_WIFI_PASSWORD[] = "";
 #endif /* CONFIG_H_ */

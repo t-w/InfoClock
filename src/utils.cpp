@@ -14,17 +14,17 @@
 #include "config.h"
 #include "Client.h"
 #include "Arduino.h"
-#include "FS.h"
+//#include "FS.h"
 #include "DataStore.h"
-#include "WiFiUdp.h"
-#include "SyslogSender.h"
+//#include "WiFiUdp.h"
+//#include "SyslogSender.h"
 #include "ESP8266WiFi.h"
 #include "tasks_utils.h"
 #include "LambdaTask.hpp"
 
-extern "C" {
-#include "user_interface.h"
-}
+//extern "C" {
+//#include "user_interface.h"
+//}
 
 uint16_t operator"" _s(long double seconds) {return seconds * 1000 / MS_PER_CYCLE;}
 uint16_t operator"" _s(unsigned long long int seconds) {return seconds * 1000 / MS_PER_CYCLE;}
@@ -156,12 +156,12 @@ void logPrintfX(const String& app, const String& format, ...)
 	vsnprintf(localBuffer+bytes, sizeof(localBuffer)-bytes, format.c_str(), argList);
 	Serial.println(localBuffer);
 
-	syslogSend(app, localBuffer+bytes);
+	//syslogSend(app, localBuffer+bytes);
 
 	va_end(argList);
 }
 
-
+/*
 bool checkFileSystem()
 {
 	bool alreadyFormatted = SPIFFS.begin();
@@ -214,11 +214,12 @@ void writeConfig(const String& name, const String& value)
 	f.close();
 	DataStore::value(name) = value;
 }
-
+*/
 
 int32_t getTimeZone()
 {
-	return readConfig("timezone").toInt();
+	//return readConfig("timezone").toInt();
+	return 0;
 }
 
 int32_t timezone = 0;
@@ -271,7 +272,7 @@ String dataSource(const char* name)
 
 void rebootClock()
 {
-	getDisplayTask().pushMessage("Rebooting...", 5_s, false);
+//	getDisplayTask().pushMessage("Rebooting...", 5_s, false);
 	logPrintfX(F("WS"), F("Rebooting in 5 seconds..."));
 	LambdaTask* lt = new LambdaTask([](){ESP.restart();});
 	addTask(lt, TaskDescriptor::ENABLED);

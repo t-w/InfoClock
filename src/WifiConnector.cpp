@@ -10,10 +10,14 @@
 #include "pgmspace.h"
 #include "Arduino.h"
 
+#include "config.h"
+
+
 extern "C"
 {
 #include "user_interface.h"
 };
+
 
 WifiConnector::WifiConnector(Callback callback): TaskCRTP(&WifiConnector::lateInit), callback(callback)
 {
@@ -25,7 +29,8 @@ void WifiConnector::lateInit()
 	if (callback)
 		callback(States::NONE);
 
-	auto essid = readConfig(F("essid"));
+	//auto essid = readConfig(F("essid"));
+    auto essid = String(DEFAULT_ESSID);
 
 	if (essid.length() == 0)
 		mainState = States::AP;
@@ -60,6 +65,21 @@ void WifiConnector::initAP()
 	return;
 }
 
+// return device's MAC address
+String WifiConnector::getMac()
+{
+	byte mac[ 6 ];
+	WiFi.macAddress( mac );
+
+	String macAddr;
+	for ( int i = 0; i <= 5; i++ )
+	{
+		if ( i > 0 ) macAddr += ":";
+		macAddr += String( mac[i], HEX );
+	}
+	return macAddr;
+}
+
 void WifiConnector::initSTA(const String& essid)
 {
 	WiFi.softAPdisconnect();
@@ -69,8 +89,10 @@ void WifiConnector::initSTA(const String& essid)
 	//set the lowest possible mode
 	wifi_set_phy_mode(PHY_MODE_11N);
 
-	String pwd   = readConfig(F("wifiPassword"));
+	//String pwd   = readConfig(F("wifiPassword"));
+ 	String pwd   = DEFAULT_WIFI_PASSWORD;
 
+    logPrintfX(F("WC"), F("MAC address: %s"), getMac().c_str() );
 	logPrintfX(F("WC"), F("Running in CLIENT mode..."));
 	logPrintfX(F("WC"), F("Connecting to %s - %s"), essid.c_str(), pwd.c_str());
 
@@ -88,9 +110,10 @@ void WifiConnector::monitorClientStatus()
 	if (connected != (status == WL_CONNECTED))
 	{
 		connected = (status == WL_CONNECTED);
+		logPrintfX(F("WC"), F("Connection status changed to %s"), connected ? "connected" : "not connected" );
 		if (callback)
 		{
-			callback(connected ? States::CLIENT: States::NONE);
+			callback(connected ? States::CLIENT : States::NONE );
 		}
 	}
 
@@ -99,9 +122,9 @@ void WifiConnector::monitorClientStatus()
 
 	if (connectionTimeout == 0)
 	{
-		logPrintfX(F("WC"), F("Timed out - falling back into AP mode..."));
-		mainState = States::AP;
-		nextState = &WifiConnector::lateInit;
+		//logPrintfX(F("WC"), F("Timed out - falling back into AP mode..."));
+		//mainState = States::AP;
+		//nextState = &WifiConnector::lateInit;
 		return;
 	}
 	sleep(connected ? 10_s: 1_s);

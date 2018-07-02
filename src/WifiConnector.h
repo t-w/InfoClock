@@ -33,6 +33,7 @@ class WifiConnector: public Tasks::TaskCRTP<WifiConnector>
 		void initSTA(const String& essid);
 		void monitorClientStatus();
 		bool getConnected() const;
+		String getMac();
 
 	private:
 		States				mainState = States::CLIENT;

@@ -10,8 +10,8 @@
 
 #include <tasks.hpp>
 
-#include "WebServerTask.h"
-#include "DisplayTask.hpp"
+//#include "WebServerTask.h"
+//#include "DisplayTask.hpp"
 
 #include <initializer_list>
 
@@ -35,7 +35,7 @@ struct RegisterTask
 		Tasks::Task* task;
 };
 
-
+/*
 using PageCallback = std::function<void(ESP8266WebServer&, void*)>;
 
 struct PageDescriptor
@@ -47,13 +47,13 @@ struct PageDescriptor
 		const char* label;
 		PageCallback callback;
 };
+*/
+//struct RegisterPage
+//{
+//		RegisterPage(const String& url, const String& label, std::function<void(ESP8266WebServer&)> ph);
+//};
 
-struct RegisterPage
-{
-		RegisterPage(const String& url, const String& label, std::function<void(ESP8266WebServer&)> ph);
-};
-
-
+/*
 struct DisplayLineDescriptor
 {
 		std::function<String(void*)> provider;
@@ -61,23 +61,23 @@ struct DisplayLineDescriptor
 		uint16_t 	cycles;
 		bool		scrolling;		//refresh till it's done
 };
-
-
+*/
+/*
 struct RegisterPackage
 {
 		RegisterPackage(const char* name, Tasks::Task* t, uint8_t flags,
 				std::initializer_list<PageDescriptor> pages,
 				std::initializer_list<DisplayLineDescriptor> displayLines);
 };
-
+*/
 void setupTasks();
 
 Tasks::Task* addTask(Tasks::Task* t, uint8_t flags = 0);
 void addTask(const TaskDescriptor& td);
 void scheduleTasks();
 
-WebServerTask& getWebServerTask();
-DisplayTask& getDisplayTask();
+//WebServerTask& getWebServerTask();
+//DisplayTask& getDisplayTask();
 
 extern bool slowTaskCanExecute;
 
